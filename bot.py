@@ -1,4 +1,4 @@
-from discord_webhook import DiscordWebhook
+from discord_webhook import DiscordWebhook, DiscordEmbed
 import json
 import aiohttp
 import asyncio
@@ -11,9 +11,13 @@ async def main():
     title = None
     old_artist = None
     old_title = None
+    webhook_resp = None
 
     while True:
         print("Loop start")
+        webhook = DiscordWebhook(url=webhook_url)
+        webhook.content = "Listen live at [HonksFM](https://honks.goosegoo.se)"
+        
         async with aiohttp.ClientSession() as session:
             async with session.get(metadata_url) as response:
 
@@ -23,7 +27,7 @@ async def main():
                     artist = result["artist"]
                     print(artist)
                 else:
-                    artist = None
+                    artist = "Unknown Artist"
 
                 if "title" in result:
                     title = result["title"]
@@ -32,9 +36,22 @@ async def main():
                     title = "tell corgski to fix the metadata"
 
                 if artist != old_artist or title != old_title:
-                    message = f'Now Playing {title}' if artist is None else f'Now Playing {artist} - {title}'
-                    webhook = DiscordWebhook(url=webhook_url, content=message)
-                    response = webhook.execute()
+                    embed = DiscordEmbed(
+                        title = "Now Playing",
+                        description = "Now playing on HonksFM",
+                        color = "ffa500"
+                    )
+                    
+                    embed.add_embed_field(name="artist", value=artist)
+                    embed.add_embed_field(name="title", value=title)
+                    
+                    webhook.remove_embeds()
+                    webhook.add_embed(embed)
+                    
+                    if webhook_resp is None:
+                        webhook_resp = webhook.execute()
+                    else:
+                        webhook_resp = webhook.edit()
                     old_artist = artist
                     old_title = title
 
