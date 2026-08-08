@@ -12,10 +12,10 @@ async def main():
     old_artist = None
     old_title = None
     webhook_resp = None
+    webhook = DiscordWebhook(url=webhook_url)
 
     while True:
 
-        webhook = DiscordWebhook(url=webhook_url)
         webhook.content = "Listen live to [HonksFM](https://honks.goosegoo.se)"
         
         async with aiohttp.ClientSession() as session:
@@ -45,7 +45,7 @@ async def main():
                     webhook.remove_embeds()
                     webhook.add_embed(embed)
                     
-                    if webhook_resp is None:
+                    if webhook.id is None:
                         webhook_resp = webhook.execute()
                     else:
                         webhook_resp = webhook.edit()
