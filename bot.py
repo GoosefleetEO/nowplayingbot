@@ -14,7 +14,7 @@ async def main():
     webhook_resp = None
 
     while True:
-        print("Loop start")
+
         webhook = DiscordWebhook(url=webhook_url)
         webhook.content = "Listen live to [HonksFM](https://honks.goosegoo.se)"
         
