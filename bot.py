@@ -20,8 +20,13 @@ async def main():
         
         async with aiohttp.ClientSession() as session:
             async with session.get(metadata_url) as response:
-
-                result = json.loads(await response.text())
+                try:
+                    result = json.loads(await response.text())
+                except Exception:
+                    asyncio.sleep(15)
+                    print("Server offline, waiting 15s")
+                    continue
+                
                 if "artist" in result:
                     artist = result["artist"]
                 else:
