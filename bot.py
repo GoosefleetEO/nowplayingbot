@@ -9,10 +9,7 @@ with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
 async def main():
-    artist = None
-    title = None
-    old_artist = None
-    old_title = None
+    old_filename = None
     metadata_url = config['host']
     webhooks = {}
     for name, hook in config['webhooks'].items():
@@ -49,7 +46,7 @@ async def main():
         else:
             title = "tell corgski to fix the metadata"
 
-        if artist == old_artist and title == old_title:
+        if old_filename == parsed_result['filename']:
             await asyncio.sleep(1)
             continue
 
@@ -103,8 +100,7 @@ async def main():
                 webhook.add_embed(embed)
                 webhook.execute()
 
-        old_artist = artist
-        old_title = title
+        old_filename = parsed_result['filename']
 
         await asyncio.sleep(1)
 
