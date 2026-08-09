@@ -12,6 +12,9 @@ async def main():
     old_filename = None
     metadata_url = config['host']
     webhooks = {}
+    color = 'ff0000' if 'color' not in config else config['color']
+    default_artist = 'Unknown' if ('defaults' not in config and 'artist' not in config['defaults']['artist']) else config['defaults']['artist']
+    default_title = 'Untitled' if ('defaults' not in config and 'title' not in config['defaults']['title']) else config['defaults']['title']
     for name, hook in config['webhooks'].items():
         if "id" in hook:
             print(f'Reusing existing post for {name}')
@@ -39,12 +42,12 @@ async def main():
         if "artist" in parsed_result:
             artist = parsed_result["artist"]
         else:
-            artist = "Unknown Artist"
+            artist = default_artist
 
         if "title" in parsed_result:
             title = parsed_result["title"]
         else:
-            title = "tell corgski to fix the metadata"
+            title = default_title
 
         if old_filename == parsed_result['filename']:
             await asyncio.sleep(1)
@@ -59,7 +62,7 @@ async def main():
                 
                 embed = DiscordEmbed(
                     title = "HonksFM",
-                    color = "ffa500"
+                    color = color
                 )
                 
                 duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
@@ -87,7 +90,7 @@ async def main():
 
                 embed = DiscordEmbed(
                     title = "Now Playing",
-                    color = "ffa500"
+                    color = color
                 )
                 
                 duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))

@@ -1,4 +1,8 @@
 host: http://localhost:8181/getmeta
+color: ffa500
+defaults:
+  artist: Unknown
+  title: Unknown
 webhooks:
   server1:
     type: nowplaying
