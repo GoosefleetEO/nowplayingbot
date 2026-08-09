@@ -3,6 +3,7 @@ import json
 import aiohttp
 import asyncio
 import yaml
+import datetime
 
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
@@ -65,8 +66,11 @@ async def main():
                                 color = "ffa500"
                             )
                             
+                            duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+                            
                             embed.add_embed_field(name="artist", value=artist)
                             embed.add_embed_field(name="title", value=title)
+                            embed.add_embed_field(name="duration", value=duration, inline=False)
                             embed.set_image(url="https://goosegoo.se/images/honkart.jpg")
                             
                             webhook.remove_embeds()
@@ -90,8 +94,11 @@ async def main():
                                 color = "ffa500"
                             )
                             
+                            duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+                            
                             embed.add_embed_field(name="artist", value=artist)
                             embed.add_embed_field(name="title", value=title)
+                            embed.add_embed_field(name="duration", value=duration, inline=False)
                             embed.add_embed_field(name="path", value=parsed_result['filename'])
                             webhook.remove_embeds()
                             webhook.add_embed(embed)
