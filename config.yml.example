@@ -1,0 +1,8 @@
+host: http://localhost:8181/getmeta
+webhooks:
+  server1:
+    type: nowplaying
+    url: https://discord.com/api/webhooks/webhook_here
+  server2:
+    type: log
+    url: https://discord.com/api/webhooks/webhook_here
