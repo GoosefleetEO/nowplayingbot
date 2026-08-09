@@ -35,74 +35,76 @@ async def main():
                     for row in result:
                         parsed_result[row[0]] = row[1]
                 except Exception:
-                    asyncio.sleep(15)
                     print("Server offline, waiting 15s")
+                    asyncio.sleep(15)
                     continue
                 
-                if "artist" in parsed_result:
-                    artist = parsed_result["artist"]
-                else:
-                    artist = "Unknown Artist"
+        if "artist" in parsed_result:
+            artist = parsed_result["artist"]
+        else:
+            artist = "Unknown Artist"
 
-                if "title" in parsed_result:
-                    title = parsed_result["title"]
-                else:
-                    title = "tell corgski to fix the metadata"
+        if "title" in parsed_result:
+            title = parsed_result["title"]
+        else:
+            title = "tell corgski to fix the metadata"
 
-                if artist != old_artist or title != old_title:
+        if artist == old_artist and title == old_title:
+            await asyncio.sleep(1)
+            continue
+
+        for name, hook in webhooks.items():
+            if hook['type'] == "nowplaying":
+                
+                webhook = hook["hook"]
+
+                webhook.content = "Listen live to [HonksFM](https://honks.goosegoo.se)"
+                
+                embed = DiscordEmbed(
+                    title = "HonksFM",
+                    color = "ffa500"
+                )
+                
+                duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+                
+                embed.add_embed_field(name="artist", value=artist)
+                embed.add_embed_field(name="title", value=title)
+                embed.add_embed_field(name="duration", value=duration, inline=False)
+                embed.set_image(url="https://goosegoo.se/images/honkart.jpg")
+                
+                webhook.remove_embeds()
+                webhook.add_embed(embed)
+                
+                if webhook.id is None:
+                    webhook.execute()
+                    hook['id'] = webhook.id
+                    config['webhooks'][name]['id'] = webhook.id
                     
-                    for name, hook in webhooks.items():
-                        if hook['type'] == "nowplaying":
-                            
-                            webhook = hook["hook"]
+                    with open('config.yml', 'w') as file:
+                        yaml.safe_dump(config, file)
+                else:
+                    webhook.edit()
+                    
+            elif hook['type'] == "log":
+                webhook = hook["hook"]
 
-                            webhook.content = "Listen live to [HonksFM](https://honks.goosegoo.se)"
-                            
-                            embed = DiscordEmbed(
-                                title = "HonksFM",
-                                color = "ffa500"
-                            )
-                            
-                            duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
-                            
-                            embed.add_embed_field(name="artist", value=artist)
-                            embed.add_embed_field(name="title", value=title)
-                            embed.add_embed_field(name="duration", value=duration, inline=False)
-                            embed.set_image(url="https://goosegoo.se/images/honkart.jpg")
-                            
-                            webhook.remove_embeds()
-                            webhook.add_embed(embed)
-                            
-                            if webhook.id is None:
-                                webhook.execute()
-                                hook['id'] = webhook.id
-                                config['webhooks'][name]['id'] = webhook.id
-                                
-                                with open('config.yml', 'w') as file:
-                                    yaml.safe_dump(config, file)
-                            else:
-                                webhook.edit()
-                                
-                        elif hook['type'] == "log":
-                            webhook = hook["hook"]
+                embed = DiscordEmbed(
+                    title = "Now Playing",
+                    color = "ffa500"
+                )
+                
+                duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+                
+                embed.add_embed_field(name="artist", value=artist)
+                embed.add_embed_field(name="title", value=title)
+                embed.add_embed_field(name="duration", value=duration, inline=False)
+                embed.add_embed_field(name="path", value=parsed_result['filename'])
+                webhook.remove_embeds()
+                webhook.add_embed(embed)
+                webhook.execute()
 
-                            embed = DiscordEmbed(
-                                title = "Now Playing",
-                                color = "ffa500"
-                            )
-                            
-                            duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
-                            
-                            embed.add_embed_field(name="artist", value=artist)
-                            embed.add_embed_field(name="title", value=title)
-                            embed.add_embed_field(name="duration", value=duration, inline=False)
-                            embed.add_embed_field(name="path", value=parsed_result['filename'])
-                            webhook.remove_embeds()
-                            webhook.add_embed(embed)
-                            webhook.execute()
-
-                    old_artist = artist
-                    old_title = title
+        old_artist = artist
+        old_title = title
 
         await asyncio.sleep(1)
 
