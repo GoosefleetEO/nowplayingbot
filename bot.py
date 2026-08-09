@@ -8,9 +8,6 @@ import datetime
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
-#webhook_url = "https://discord.com/api/webhooks/webook_goes_here"
-#metadata_url = "https://radio.station.invalid/metadata_endpoint"
-
 async def main():
     artist = None
     title = None
