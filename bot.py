@@ -4,6 +4,8 @@ import aiohttp
 import asyncio
 import yaml
 import datetime
+import audioread
+
 
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
@@ -13,8 +15,8 @@ async def main():
     metadata_url = config['host']
     webhooks = {}
     color = 'ff0000' if 'color' not in config else config['color']
-    default_artist = 'Unknown' if ('defaults' not in config and 'artist' not in config['defaults']['artist']) else config['defaults']['artist']
-    default_title = 'Untitled' if ('defaults' not in config and 'title' not in config['defaults']['title']) else config['defaults']['title']
+    default_artist = 'Unknown' if ('defaults' not in config or 'artist' not in config['defaults']) else config['defaults']['artist']
+    default_title = 'Untitled' if ('defaults' not in config or 'title' not in config['defaults']) else config['defaults']['title']
     for name, hook in config['webhooks'].items():
         if "id" in hook:
             print(f'Reusing existing post for {name}')
@@ -53,6 +55,12 @@ async def main():
             await asyncio.sleep(1)
             continue
 
+        if "liq_cue_out" in parsed_result:
+            duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+        else:
+            with audioread.audio_open(parsed_result['filename']) as f:
+                duration = str(datetime.timedelta(seconds=float(f.duration)))
+
         for name, hook in webhooks.items():
             if hook['type'] == "nowplaying":
                 
@@ -65,7 +73,7 @@ async def main():
                     color = color
                 )
                 
-                duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
+
                 
                 embed.add_embed_field(name="artist", value=artist)
                 embed.add_embed_field(name="title", value=title)
@@ -92,9 +100,7 @@ async def main():
                     title = "Now Playing",
                     color = color
                 )
-                
-                duration = str(datetime.timedelta(seconds=float(parsed_result['liq_cue_out'])))
-                
+
                 embed.add_embed_field(name="artist", value=artist)
                 embed.add_embed_field(name="title", value=title)
                 embed.add_embed_field(name="duration", value=duration, inline=False)
