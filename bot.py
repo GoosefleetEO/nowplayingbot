@@ -78,7 +78,7 @@ async def main():
                 embed.add_embed_field(name="artist", value=artist)
                 embed.add_embed_field(name="title", value=title)
                 embed.add_embed_field(name="duration", value=duration, inline=False)
-                embed.set_image(url="https://goosegoo.se/images/honkart.jpg")
+                embed.set_image(url=config['image'])
                 
                 webhook.remove_embeds()
                 webhook.add_embed(embed)

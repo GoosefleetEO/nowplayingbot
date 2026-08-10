@@ -1,4 +1,5 @@
 host: http://localhost:8181/getmeta
+image: http://example.com/image.png
 color: ffa500
 defaults:
   artist: Unknown
