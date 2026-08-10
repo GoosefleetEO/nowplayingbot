@@ -1,6 +1,8 @@
 host: http://localhost:8181/getmeta
 image: http://example.com/image.png
 color: ffa500
+teaser: Listen live to [HonksFM](https://honks.goosegoo.se)
+header: HonksFM
 defaults:
   artist: Unknown
   title: Unknown

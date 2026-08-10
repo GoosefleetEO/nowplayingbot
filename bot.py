@@ -66,10 +66,10 @@ async def main():
                 
                 webhook = hook["hook"]
 
-                webhook.content = "Listen live to [HonksFM](https://honks.goosegoo.se)"
+                webhook.content = config['teaser']
                 
                 embed = DiscordEmbed(
-                    title = "HonksFM",
+                    title = config['header'],
                     color = color
                 )
                 
