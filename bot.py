@@ -29,17 +29,18 @@ async def main():
 
     while True:
         
-        async with aiohttp.ClientSession() as session:
-            async with session.get(metadata_url) as response:
-                try:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(metadata_url) as response:
+                
                     parsed_result = {}
                     result = json.loads(await response.text())
                     for row in result:
                         parsed_result[row[0]] = row[1]
-                except Exception:
-                    print("Server offline, waiting 15s")
-                    asyncio.sleep(15)
-                    continue
+        except Exception:
+            print("Server offline, waiting 15s")
+            asyncio.sleep(15)
+            continue
                 
         if "artist" in parsed_result:
             artist = parsed_result["artist"]
